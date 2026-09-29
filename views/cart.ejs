@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<h1>Your Cart</h1>
+
+<% if (items.length === 0) { %>
+  <p class="empty-state">Your cart is empty. <a href="/">Go shopping</a></p>
+<% } else { %>
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach(item => { %>
+        <tr>
+          <td class="cart-product-cell">
+            <img src="<%= item.product.image_url %>" alt="<%= item.product.name %>">
+            <a href="/product/<%= item.product.id %>"><%= item.product.name %></a>
+          </td>
+          <td>₹<%= item.product.price.toFixed(2) %></td>
+          <td>
+            <form method="POST" action="/cart/update/<%= item.product.id %>" class="qty-form">
+              <input type="number" name="quantity" value="<%= item.quantity %>" min="1" max="<%= item.product.stock %>">
+              <button type="submit">Update</button>
+            </form>
+          </td>
+          <td>₹<%= item.subtotal.toFixed(2) %></td>
+          <td>
+            <form method="POST" action="/cart/remove/<%= item.product.id %>">
+              <button type="submit" class="remove-btn">Remove</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <h2>Total: ₹<%= total.toFixed(2) %></h2>
+    <form method="POST" action="/cart/checkout">
+      <button type="submit" class="checkout-btn">Proceed to Checkout</button>
+    </form>
+    <% if (!currentUser) { %>
+      <p class="hint">You'll need to log in to complete checkout.</p>
+    <% } %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

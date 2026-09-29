@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="<%= (currentPath === '/login' || currentPath === '/register') ? 'auth-page' : '' %>">
+  <div class="page-transition-veil"></div>
+
+  <div class="navbar-wrap">
+    <nav class="navbar">
+      <a href="/" class="brand">
+        <span class="brand-glyph" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 8H20L18.5 18.5C18.35 19.6 17.4 20.4 16.3 20.4H9.7C8.6 20.4 7.65 19.6 7.5 18.5L6 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M9 8V6.5C9 4.6 10.6 3 12.5 3C14.4 3 16 4.6 16 6.5V8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-word">Campus Cart</span>
+      </a>
+
+      <%
+        const homeActive = (currentPath === '/' || currentPath.indexOf('/product/') === 0);
+        const cartActive = (currentPath === '/cart');
+        const ordersActive = (currentPath === '/orders');
+        const adminActive = (currentPath.indexOf('/admin') === 0);
+        const loginActive = (currentPath === '/login');
+      %>
+      <div class="nav-links">
+        <span class="nav-pill" aria-hidden="true"></span>
+        <a href="/" data-nav-key="home" class="<%= homeActive ? 'active' : '' %>">Home</a>
+        <a href="/cart" data-nav-key="cart" class="nav-cart <%= cartActive ? 'active' : '' %>">
+          Cart
+          <% if (cartCount > 0) { %><span class="cart-badge"><%= cartCount %></span><% } %>
+        </a>
+        <% if (currentUser) { %>
+          <a href="/orders" data-nav-key="orders" class="<%= ordersActive ? 'active' : '' %>">Orders</a>
+          <% if (currentUser.is_admin) { %>
+            <a href="/admin/products" data-nav-key="admin" class="<%= adminActive ? 'active' : '' %>">Admin</a>
+          <% } %>
+          <span class="nav-user">
+            <span class="avatar"><%= currentUser.name.charAt(0).toUpperCase() %></span>
+            <span class="nav-user-name"><%= currentUser.name %></span>
+          </span>
+          <a href="/logout">Logout</a>
+        <% } else { %>
+          <a href="/login" data-nav-key="login" class="<%= loginActive ? 'active' : '' %>">Login</a>
+          <a href="/register" class="nav-cta">Register</a>
+        <% } %>
+      </div>
+    </nav>
+  </div>
+
+  <main class="container">

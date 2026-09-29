@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h1>Shop Products</h1>
+  <form class="search-form" method="GET" action="/">
+    <input type="text" name="q" placeholder="Search products..." value="<%= q %>">
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<div class="category-filters">
+  <a href="/" class="chip <%= activeCategory === '' ? 'active' : '' %>">All</a>
+  <% categories.forEach(cat => { %>
+    <a href="/?category=<%= encodeURIComponent(cat) %>" class="chip <%= activeCategory === cat ? 'active' : '' %>"><%= cat %></a>
+  <% }) %>
+</div>
+
+<% if (products.length === 0) { %>
+  <p class="empty-state">No products found.</p>
+<% } else { %>
+  <div class="product-grid">
+    <% products.forEach(p => { %>
+      <a href="/product/<%= p.id %>" class="product-card">
+        <img src="<%= p.image_url %>" alt="<%= p.name %>">
+        <div class="product-card-body">
+          <span class="category-tag"><%= p.category %></span>
+          <h3><%= p.name %></h3>
+          <p class="price">₹<%= p.price.toFixed(2) %></p>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

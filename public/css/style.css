@@ -1,0 +1,685 @@
+/* ============================================================
+   Campus Cart — design tokens
+   A dark, colorful gradient backdrop is what makes the glass
+   panels below actually read as "glass" (blur needs something
+   underneath it to distort).
+   ============================================================ */
+:root {
+  --deep:        #100E28;
+  --violet:      #3B2E82;
+  --iris:        #7C5CFC;
+  --amber:       #F5A93F;
+  --frost:       #F4F1FF;
+
+  --ink:         var(--frost);
+  --ink-soft:    rgba(244, 241, 255, 0.66);
+  --ink-faint:   rgba(244, 241, 255, 0.44);
+
+  --success:     #4CD9A0;
+  --danger:      #FF6B6B;
+
+  --glass:         rgba(244, 241, 255, 0.07);
+  --glass-strong:  rgba(244, 241, 255, 0.13);
+  --glass-border:  rgba(244, 241, 255, 0.16);
+  --glass-border-strong: rgba(244, 241, 255, 0.28);
+  --glass-shadow:  rgba(6, 4, 24, 0.55);
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--deep);
+  position: relative;
+}
+
+/* Fixed colorful mesh behind everything — this is what the glass blurs into. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 92, 252, 0.55), transparent 42%),
+    radial-gradient(circle at 88% 18%, rgba(245, 169, 63, 0.28), transparent 38%),
+    radial-gradient(circle at 30% 92%, rgba(76, 217, 160, 0.18), transparent 40%),
+    radial-gradient(circle at 82% 88%, rgba(124, 92, 252, 0.4), transparent 45%),
+    linear-gradient(160deg, var(--deep) 0%, var(--violet) 55%, #241a54 100%);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+
+a { color: inherit; }
+
+/* ============================================================
+   Page transition veil
+   ============================================================ */
+.page-transition-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 15%, rgba(124, 92, 252, 0.4), rgba(9, 7, 28, 0.62));
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  opacity: 1;
+  animation: veilClear 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.05s;
+}
+
+.page-transition-veil.active {
+  animation: none !important;
+  opacity: 1;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+@keyframes veilClear {
+  to { opacity: 0; backdrop-filter: blur(0px) saturate(100%); -webkit-backdrop-filter: blur(0px) saturate(100%); }
+}
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.navbar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 18px 20px 0;
+}
+
+.navbar {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border-strong);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 12px 32px var(--glass-shadow);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.brand-glyph {
+  display: inline-flex;
+  color: var(--amber);
+}
+
+.brand-word {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--ink);
+}
+
+/* ---- Auth pages: navbar splits into two independent glass capsules ----
+   The single glass bar hands its background off to .brand and .nav-links
+   individually, and each one settles into place from the middle outward —
+   reading as the bar cracking apart into "identity" vs "navigation". */
+body.auth-page .navbar {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  gap: 14px;
+}
+
+body.auth-page .brand,
+body.auth-page .nav-links {
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border-strong);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 12px 30px var(--glass-shadow);
+}
+
+body.auth-page .brand {
+  animation: splitApartLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.15s;
+}
+
+body.auth-page .nav-links {
+  animation: splitApartRight 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.15s;
+}
+
+@keyframes splitApartLeft {
+  from { transform: translateX(22px); opacity: 0.3; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes splitApartRight {
+  from { transform: translateX(-22px); opacity: 0.3; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+.nav-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--ink);
+  background: var(--glass);
+}
+
+.nav-links a.active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* The sliding "you are here" indicator. Its position/size are set inline
+   by transitions.js to match whichever link is active — instantly on a
+   fresh page load, and with a smooth glide when you click to a new one. */
+.nav-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(124, 92, 252, 0.4), rgba(245, 169, 63, 0.28));
+  border: 1px solid var(--glass-border-strong);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: 0 6px 18px rgba(124, 92, 252, 0.28);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: left 0.38s cubic-bezier(0.65, 0, 0.35, 1),
+              width 0.38s cubic-bezier(0.65, 0, 0.35, 1),
+              top 0.38s cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 0.25s ease;
+}
+
+.nav-pill.ready { opacity: 1; }
+
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--deep);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.nav-cta {
+  background: linear-gradient(135deg, var(--amber), #ffcf7a);
+  color: var(--deep) !important;
+  font-weight: 600;
+}
+
+.nav-cta:hover { background: linear-gradient(135deg, #ffb84d, var(--amber)) !important; }
+
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 999px;
+  background: var(--glass);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--iris), var(--amber));
+  color: var(--deep);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 30px 20px 60px;
+  min-height: 65vh;
+  animation: contentRise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.12s;
+}
+
+@keyframes contentRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.footer {
+  text-align: center;
+  color: var(--ink-faint);
+  padding: 24px 20px;
+  font-size: 0.82rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+/* ============================================================
+   Inputs (shared glass style)
+   ============================================================ */
+input, textarea {
+  font-family: var(--font-body);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+input::placeholder, textarea::placeholder { color: var(--ink-faint); }
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--iris);
+  background: var(--glass-strong);
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.search-form { display: flex; }
+.search-form input { border-radius: 999px 0 0 999px; width: 220px; padding-left: 16px; }
+.search-form button { border-radius: 0 999px 999px 0; }
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+button, .add-btn, .checkout-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.92rem;
+  border: 1px solid var(--glass-border-strong);
+  background: var(--glass-strong);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover, .add-btn:hover { background: var(--glass); border-color: var(--glass-border-strong); }
+button:active { transform: scale(0.96); }
+
+.add-btn, .checkout-btn,
+.add-to-cart-form button,
+.auth-form button {
+  background: linear-gradient(135deg, var(--amber), #ffcf7a);
+  color: var(--deep);
+  border: none;
+  box-shadow: 0 8px 22px rgba(245, 169, 63, 0.28);
+}
+
+.add-btn:hover, .checkout-btn:hover,
+.add-to-cart-form button:hover,
+.auth-form button:hover {
+  background: linear-gradient(135deg, #ffb84d, var(--amber));
+  box-shadow: 0 10px 26px rgba(245, 169, 63, 0.36);
+}
+
+.remove-btn {
+  background: rgba(255, 107, 107, 0.16);
+  border: 1px solid rgba(255, 107, 107, 0.32);
+  color: #ffb4b4;
+}
+
+.remove-btn:hover { background: rgba(255, 107, 107, 0.26); }
+
+.ripple {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  margin-left: -70px;
+  margin-top: -70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  opacity: 0.6;
+  pointer-events: none;
+  animation: rippleOut 0.6s ease-out forwards;
+}
+
+@keyframes rippleOut {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* ============================================================
+   Category chips
+   ============================================================ */
+.category-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+
+.chip {
+  position: relative;
+  overflow: hidden;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.chip:hover { border-color: var(--glass-border-strong); color: var(--ink); }
+
+.chip.active {
+  background: linear-gradient(135deg, var(--iris), #9b7bff);
+  border-color: transparent;
+  color: white;
+}
+
+/* ============================================================
+   Product grid / cards
+   ============================================================ */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--glass-border-strong);
+  box-shadow: 0 18px 40px var(--glass-shadow);
+}
+
+.product-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover img { transform: scale(1.06); }
+
+.product-card-body { padding: 16px; }
+.product-card-body h3 { font-size: 1rem; margin: 8px 0 6px; }
+
+.category-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: rgba(245, 169, 63, 0.16);
+  color: var(--amber);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.price {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-state, .hint { color: var(--ink-faint); }
+
+/* ============================================================
+   Product detail
+   ============================================================ */
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.back-link:hover { color: var(--ink); }
+
+.product-detail {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.product-detail img {
+  width: 320px;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.product-detail-info { flex: 1; min-width: 240px; }
+.product-detail-info .price { font-size: 1.4rem; display: block; margin: 6px 0; }
+.description { color: var(--ink-soft); line-height: 1.6; }
+
+.stock.in-stock { color: var(--success); }
+.stock.out-of-stock { color: var(--danger); }
+
+.add-to-cart-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.add-to-cart-form input[type="number"] { width: 70px; }
+
+/* ============================================================
+   Cart & tables
+   ============================================================ */
+.cart-table, .admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.cart-table th, .cart-table td,
+.admin-table th, .admin-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--glass-border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.cart-table th, .admin-table th { color: var(--ink-faint); font-weight: 600; font-size: 0.8rem; }
+.cart-table tr:last-child td, .admin-table tr:last-child td { border-bottom: none; }
+
+.cart-product-cell { display: flex; align-items: center; gap: 12px; }
+.cart-product-cell img { width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); }
+.cart-product-cell a { text-decoration: none; color: var(--ink); }
+
+.qty-form { display: flex; gap: 6px; }
+.qty-form input { width: 60px; padding: 6px 8px; }
+
+.cart-summary {
+  margin-top: 22px;
+  padding: 22px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ============================================================
+   Auth forms
+   ============================================================ */
+.auth-form-wrap {
+  max-width: 380px;
+  margin: 0 auto;
+  background: var(--glass);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 10px; }
+.auth-form label { font-size: 0.82rem; color: var(--ink-faint); }
+.auth-form button { margin-top: 8px; }
+
+.error-msg { color: var(--danger); font-size: 0.9rem; }
+.success-msg {
+  color: var(--success);
+  background: rgba(76, 217, 160, 0.12);
+  border: 1px solid rgba(76, 217, 160, 0.28);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   Orders
+   ============================================================ */
+.order-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.order-header { display: flex; justify-content: space-between; align-items: center; }
+
+.order-status {
+  background: rgba(124, 92, 252, 0.18);
+  color: #c3b3ff;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.order-date { color: var(--ink-faint); font-size: 0.8rem; margin: 4px 0 12px; }
+.order-items { margin: 0; padding-left: 18px; font-size: 0.9rem; color: var(--ink-soft); }
+.order-total { font-family: var(--font-display); font-weight: 600; color: var(--amber); margin-top: 12px; }
+
+/* ============================================================
+   Admin
+   ============================================================ */
+.admin-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm); }
+.admin-actions { display: flex; gap: 12px; align-items: center; }
+.admin-actions a { color: var(--iris); text-decoration: none; }
+.admin-actions a:hover { text-decoration: underline; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+  .navbar { flex-direction: column; align-items: flex-start; }
+  .product-detail { flex-direction: column; }
+  .product-detail img { width: 100%; }
+  .search-form input { width: 150px; }
+}

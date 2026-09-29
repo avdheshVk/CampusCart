@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<h1>My Orders</h1>
+
+<% if (placedId) { %>
+  <p class="success-msg">Order #<%= placedId %> placed successfully!</p>
+<% } %>
+
+<% if (orders.length === 0) { %>
+  <p class="empty-state">You haven't placed any orders yet. <a href="/">Start shopping</a></p>
+<% } else { %>
+  <% orders.forEach(order => { %>
+    <div class="order-card">
+      <div class="order-header">
+        <h3>Order #<%= order.id %></h3>
+        <span class="order-status"><%= order.status %></span>
+      </div>
+      <p class="order-date"><%= order.created_at %></p>
+      <ul class="order-items">
+        <% order.items.forEach(item => { %>
+          <li><%= item.product_name %> &times; <%= item.quantity %> &mdash; ₹<%= (item.price * item.quantity).toFixed(2) %></li>
+        <% }) %>
+      </ul>
+      <p class="order-total">Total: ₹<%= order.total.toFixed(2) %></p>
+    </div>
+  <% }) %>
+<% } %>
+
+<%- include('partials/footer') %>

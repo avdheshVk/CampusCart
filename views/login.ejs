@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+
+<div class="auth-form-wrap">
+  <h1>Login</h1>
+  <% if (error) { %><p class="error-msg"><%= error %></p><% } %>
+  <form method="POST" action="/login" class="auth-form">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button type="submit">Login</button>
+  </form>
+  <p>Don't have an account? <a href="/register">Register</a></p>
+  <p class="hint">Admin demo login: admin@campuscart.com / admin123</p>
+</div>
+
+<%- include('partials/footer') %>
