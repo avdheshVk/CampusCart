@@ -95,16 +95,14 @@ if (productCount === 0) {
   `);
 
   const sampleProducts = [
-    ['Wireless Headphones', 'Over-ear Bluetooth headphones with noise cancellation.', 2499, 'Electronics', 'https://picsum.photos/seed/headphones/400/300', 25],
-    ['Smart Watch', 'Fitness tracking smartwatch with heart-rate monitor.', 3499, 'Electronics', 'https://picsum.photos/seed/smartwatch/400/300', 15],
-    ['Mechanical Keyboard', 'RGB backlit mechanical keyboard, blue switches.', 1899, 'Electronics', 'https://picsum.photos/seed/keyboard/400/300', 30],
-    ['Cotton T-Shirt', 'Comfortable 100% cotton round-neck t-shirt.', 499, 'Fashion', 'https://picsum.photos/seed/tshirt/400/300', 100],
-    ['Denim Jacket', 'Classic blue denim jacket, unisex fit.', 1799, 'Fashion', 'https://picsum.photos/seed/jacket/400/300', 40],
-    ['Running Shoes', 'Lightweight running shoes with cushioned sole.', 2199, 'Fashion', 'https://picsum.photos/seed/shoes/400/300', 50],
-    ['Data Structures Textbook', 'Comprehensive guide to data structures and algorithms.', 699, 'Books', 'https://picsum.photos/seed/dsbook/400/300', 20],
-    ['Web Development Guide', 'Beginner-friendly book on modern web development.', 599, 'Books', 'https://picsum.photos/seed/webbook/400/300', 20],
-    ['Table Lamp', 'Minimalist LED table lamp with adjustable brightness.', 899, 'Home', 'https://picsum.photos/seed/lamp/400/300', 35],
-    ['Coffee Mug Set', 'Set of 2 ceramic coffee mugs.', 399, 'Home', 'https://picsum.photos/seed/mug/400/300', 60],
+    ['Wireless Headphones', 'Over-ear Bluetooth headphones with noise cancellation.', 2499, 'Electronics', '/images/headphone.jpg', 15],
+    ['Smart Watch', 'Fitness tracking smartwatch with heart-rate monitor.', 3499, 'Electronics', '/images/watch.webp', 20],
+    ['Mechanical Keyboard', 'RGB backlit mechanical keyboard, blue switches.', 1899, 'Electronics', '/images/keyboard.jpg', 12],
+    ['Cotton T-Shirt', 'Comfortable 100% cotton round-neck t-shirt.', 499, 'Fashion', '/images/tshirt.jpg', 30],
+    ['Running Shoes', 'Lightweight running shoes with cushioned sole.', 2199, 'Fashion', '/images/shoes.webp', 18],
+    ['Data Structures Textbook', 'Comprehensive guide to data structures and algorithms.', 699, 'Books', '/images/book.png', 25],
+    ['Table Lamp', 'Minimalist LED table lamp with adjustable brightness.', 899, 'Home', '/images/lamp.webp', 35],
+    ['Coffee Mug Set', 'Set of 2 ceramic coffee mugs.', 399, 'Home', '/images/mug.webp', 60]
   ];
 
   runInTransaction(() => {
