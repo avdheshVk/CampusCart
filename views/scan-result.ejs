@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="scan-page">
+  <main class="scan-card">
+    <p class="scan-brand">CampusPay <span>demo</span></p>
+
+    <% if (state === 'success') { %>
+      <div class="scan-icon ok">&#10003;</div>
+      <h1>Payment successful</h1>
+      <p class="scan-amount">₹<%= order.total.toFixed(2) %></p>
+      <p class="scan-line">Order #<%= order.id %> has been placed.</p>
+      <p class="scan-ref">Ref <%= order.payment_ref %></p>
+      <p class="hint">You can close this page &mdash; your order is now showing on the computer.</p>
+
+    <% } else if (state === 'already') { %>
+      <div class="scan-icon ok">&#10003;</div>
+      <h1>Already paid</h1>
+      <p class="scan-line">Order #<%= order.id %> was already paid for.</p>
+      <p class="scan-ref">Ref <%= order.payment_ref %></p>
+
+    <% } else { %>
+      <div class="scan-icon bad">!</div>
+      <h1>Invalid payment link</h1>
+      <p class="scan-line">This QR code isn't recognised. Go back to the website and open the payment page again.</p>
+    <% } %>
+
+    <p class="demo-note">Demo gateway &mdash; no real money was charged.</p>
+  </main>
+</body>
+</html>

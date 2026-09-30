@@ -731,3 +731,36 @@ button:active { transform: scale(0.96); }
 .order-payment { font-size: 0.82rem; color: var(--ink-faint); margin: 6px 0 0; }
 .pay-now-link { color: var(--amber); font-weight: 600; text-decoration: none; }
 .pay-now-link:hover { text-decoration: underline; }
+
+/* "Waiting for payment" indicator under the QR code */
+.pay-wait { text-align: center; color: var(--amber); font-weight: 600; margin: 14px 0 4px; }
+.pay-dot {
+  display: inline-block; width: 10px; height: 10px; margin-right: 6px;
+  border-radius: 50%; background: var(--amber);
+  animation: pay-pulse 1.2s ease-in-out infinite;
+}
+@keyframes pay-pulse { 0%, 100% { opacity: 0.25; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.15); } }
+.pay-panel .hint { text-align: center; }
+.pay-panel .hint a { color: var(--iris); }
+
+/* Page shown on the phone after scanning the QR */
+.scan-page { display: flex; align-items: center; justify-content: center; padding: 20px; }
+.scan-card {
+  width: 100%; max-width: 380px; text-align: center;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg); padding: 28px 22px;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 18px 40px var(--glass-shadow);
+}
+.scan-brand { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.02em; margin: 0 0 18px; }
+.scan-brand span { color: var(--amber); font-weight: 500; font-size: 0.8rem; }
+.scan-icon {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; font-weight: 700;
+}
+.scan-icon.ok  { background: rgba(76, 217, 160, 0.16); color: var(--success); border: 2px solid var(--success); }
+.scan-icon.bad { background: rgba(255, 107, 107, 0.16); color: var(--danger);  border: 2px solid var(--danger); }
+.scan-amount { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--amber); margin: 4px 0; }
+.scan-line { color: var(--ink-soft); margin: 6px 0; }
+.scan-ref  { color: var(--ink-faint); font-size: 0.8rem; margin: 4px 0 14px; }

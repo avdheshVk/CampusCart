@@ -18,22 +18,24 @@
   <!-- Payment methods -->
   <section class="pay-card pay-methods">
     <div class="pay-tabs" role="tablist">
-      <button type="button" class="pay-tab <%= tab === 'upi' ? 'active' : '' %>" data-tab="upi">Scan QR (UPI)</button>
+      <button type="button" class="pay-tab <%= tab === 'qr' ? 'active' : '' %>" data-tab="qr">Scan QR</button>
       <button type="button" class="pay-tab <%= tab === 'card' ? 'active' : '' %>" data-tab="card">Card</button>
     </div>
 
     <% if (error) { %><p class="error-msg"><%= error %></p><% } %>
 
-    <!-- UPI / QR -->
-    <div class="pay-panel <%= tab === 'upi' ? 'active' : '' %>" id="panel-upi">
-      <p class="hint">Scan this code with any camera or UPI app.</p>
+    <!-- QR -->
+    <div class="pay-panel <%= tab === 'qr' ? 'active' : '' %>" id="panel-qr">
+      <p class="hint">Scan this code with your phone camera to pay. Your order is placed automatically.</p>
       <div class="qr-box"><%- qrSvg %></div>
-      <p class="qr-meta">Pay to <strong><%= merchantVpa %></strong></p>
-      <p class="qr-meta">₹<%= order.total.toFixed(2) %></p>
-      <form method="POST" action="/pay/<%= order.id %>/upi">
-        <button type="submit" class="checkout-btn">I've scanned &amp; paid</button>
-      </form>
-      <p class="hint small">Demo only: the merchant id is fake, so the button above simulates the bank confirming your payment.</p>
+      <p class="qr-meta">Pay <strong>₹<%= order.total.toFixed(2) %></strong> to Campus Cart</p>
+
+      <p class="pay-wait" id="pay-wait"><span class="pay-dot"></span> Waiting for payment&hellip;</p>
+
+      <p class="hint small">
+        Your phone must be on the same Wi-Fi as this computer.<br>
+        Phone not connecting? <a href="<%= scanUrl %>" target="_blank" rel="noopener">open the scan link on this computer</a> instead.
+      </p>
     </div>
 
     <!-- Card -->
@@ -74,6 +76,22 @@
       document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
     });
   });
+  // Ask the server every 2s whether the QR has been scanned; when it has, go to the orders page.
+  (function poll() {
+    fetch('/pay/<%= order.id %>/status', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.paid) {
+          var w = document.getElementById('pay-wait');
+          if (w) w.textContent = 'Payment received! Placing your order\u2026';
+          window.location.href = '/orders?placed=<%= order.id %>';
+        } else {
+          setTimeout(poll, 2000);
+        }
+      })
+      .catch(function () { setTimeout(poll, 4000); });
+  })();
+
   var num = document.getElementById('card_number');
   num.addEventListener('input', function () {
     num.value = num.value.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();

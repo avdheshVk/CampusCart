@@ -14,7 +14,7 @@ A full-stack e-commerce website built for a college (CA/BCA) project.
 - Product detail pages
 - Shopping cart (session-based — works even before logging in)
 - User registration & login
-- Checkout that creates an order, then a **demo payment gateway (CampusPay)** with a scannable UPI-style QR code or a test-card form
+- Checkout that creates an order, then a **demo payment gateway (CampusPay)**: scan a QR code with your phone and the order is placed automatically (or use a test-card form)
 - Order history for each user
 - Admin panel to add / edit / delete products
 - Dark "liquid glass" UI (frosted glass panels over a gradient backdrop) with
@@ -39,13 +39,20 @@ you run the app, along with 10 sample products.
 ## Payment Gateway (Demo)
 After **Proceed to Payment**, the order is saved as *awaiting payment* and the
 customer lands on `/pay/<order id>`:
-- **Scan QR (UPI):** shows a real, scannable QR code containing a UPI payment link
-  (`upi://pay?...`) with a fake merchant id. Press *I've scanned & paid* to simulate confirmation.
+- **Scan QR:** the page shows a scannable QR code. Scanning it with a phone (same Wi-Fi as the
+  computer) opens `/pay/scan/<secret token>` on the phone, which pays the order automatically.
+  The payment page on the computer checks every 2 seconds, sees the order is paid, and moves
+  to *My Orders* by itself — no button to press.
 - **Card:** validates the card (Luhn check, expiry, CVV). Test card: `4242 4242 4242 4242`,
   any future expiry, any CVV. A card ending in `0002` is always declined (to show the failure case).
 - Card details are never stored. A successful payment marks the order *paid* and saves the method,
   a fake reference (e.g. `CP-7F3A9C21B4`) and the time.
 - No real money moves. Swapping in Razorpay/Stripe later would only change `routes/payment.js`.
+
+**Demo tips for the QR:** the QR contains this computer's Wi-Fi address (e.g. `http://192.168.1.5:3000/...`),
+because a phone can't open `localhost`. If Windows shows a firewall prompt the first time, click *Allow*.
+Presenting over the internet or on a different network? Set `PUBLIC_URL` (for example an ngrok link):
+`$env:PUBLIC_URL="https://your-link.ngrok-free.app"; npm start`
 
 ## Default Admin Login
 ```
@@ -65,12 +72,13 @@ campus-cart/
 │   └── auth.js             # requireLogin / requireAdmin guards
 ├── lib/qrcode/             # Bundled MIT-licensed QR encoder (no npm package needed)
 ├── utils/qr.js             # Turns text into an inline SVG QR code
+├── utils/network.js        # Finds the LAN address a phone can reach
 ├── routes/
 │   ├── index.js            # Home page + product detail
 │   ├── auth.js              # Register / login / logout
 │   ├── cart.js               # Cart + checkout
 │   ├── orders.js             # Order history
-│   ├── payment.js            # Demo payment gateway (QR + card)
+│   ├── payment.js            # Demo payment gateway (QR scan + card)
 │   └── admin.js                # Admin product management
 ├── views/                  # EJS templates
 │   ├── partials/            # header/footer

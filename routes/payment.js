@@ -1,8 +1,13 @@
 // routes/payment.js
 // DEMO payment gateway ("CampusPay") — no real money is ever moved.
-//   GET  /pay/:id          -> payment page (scan QR or pay by test card)
-//   POST /pay/:id/upi      -> customer says they've scanned & paid via the QR
+//   GET  /pay/:id          -> payment page: shows a QR code (or a test-card form)
+//   GET  /pay/:id/status   -> tiny JSON the payment page polls: { paid: true/false }
+//   GET  /pay/scan/:token  -> opened by the PHONE that scans the QR; pays the order automatically
 //   POST /pay/:id/card     -> validates a test card, then marks the order paid
+//
+// How the QR flow works: the QR contains a link like http://192.168.1.5:3000/pay/scan/<secret>.
+// When a phone scans it, the server marks that order paid. Meanwhile the payment page on the
+// computer keeps asking /status every 2 seconds, sees "paid", and jumps to the orders page.
 //
 // Card details are validated and thrown away — they are NEVER stored.
 
@@ -12,8 +17,7 @@ const router = express.Router();
 const { db } = require('../db/database');
 const { requireLogin } = require('../middleware/auth');
 const { toSvg } = require('../utils/qr');
-
-const MERCHANT_VPA = 'campuscart@demobank'; // fake UPI id
+const { getBaseUrl } = require('../utils/network');
 
 // Load an order and make sure it belongs to the logged-in user.
 function getOwnOrder(req, res) {
@@ -55,40 +59,57 @@ function luhnValid(num) {
 }
 
 function renderPayPage(req, res, order, extra = {}) {
-  // This string is what the QR code contains. It follows the real UPI deep-link
-  // format, so phone cameras / UPI apps recognise it, but the merchant id is fake.
-  const txnRef = 'CC' + String(order.id).padStart(6, '0');
-  const upiLink =
-    `upi://pay?pa=${MERCHANT_VPA}&pn=${encodeURIComponent('Campus Cart')}` +
-    `&am=${order.total.toFixed(2)}&cu=INR&tn=${encodeURIComponent('Order #' + order.id)}&tr=${txnRef}`;
+  // Every order gets its own unguessable token; it is the "key" inside the QR code.
+  let token = order.pay_token;
+  if (!token) {
+    token = crypto.randomBytes(16).toString('hex');
+    db.prepare('UPDATE orders SET pay_token = ? WHERE id = ?').run(token, order.id);
+  }
+
+  const baseUrl = getBaseUrl(req);
+  const scanUrl = `${baseUrl}/pay/scan/${token}`;
 
   res.render('payment', {
     order,
-    qrSvg: toSvg(upiLink, { size: 240 }),
-    upiLink,
-    merchantVpa: MERCHANT_VPA,
-    tab: 'upi',
+    qrSvg: toSvg(scanUrl, { size: 240 }),
+    scanUrl,
+    baseUrl,
+    tab: 'qr',
     error: null,
     form: {},
     ...extra
   });
 }
 
+// Opened by the phone that scans the QR code. No login needed on the phone:
+// the secret token in the link is what proves it's the right order.
+// (Declared before /pay/:id so "scan" is never mistaken for an order id.)
+router.get('/pay/scan/:token', (req, res) => {
+  const order = db.prepare('SELECT * FROM orders WHERE pay_token = ?').get(req.params.token);
+  if (!order) return res.status(404).render('scan-result', { state: 'invalid', order: null });
+
+  if (order.payment_status === 'paid') {
+    return res.render('scan-result', { state: 'already', order });
+  }
+
+  markPaid(order.id, 'QR Scan');
+  const paid = db.prepare('SELECT * FROM orders WHERE id = ?').get(order.id);
+  res.render('scan-result', { state: 'success', order: paid });
+});
+
+// The payment page asks this every couple of seconds: "has the QR been scanned yet?"
+router.get('/pay/:id/status', requireLogin, (req, res) => {
+  const order = getOwnOrder(req, res);
+  if (!order) return;
+  res.set('Cache-Control', 'no-store');
+  res.json({ paid: order.payment_status === 'paid' });
+});
+
 router.get('/pay/:id', requireLogin, (req, res) => {
   const order = getOwnOrder(req, res);
   if (!order) return;
   if (order.payment_status === 'paid') return res.redirect(`/orders?placed=${order.id}`);
   renderPayPage(req, res, order);
-});
-
-// "I've paid" after scanning the QR (simulated — there is no bank to check with).
-router.post('/pay/:id/upi', requireLogin, (req, res) => {
-  const order = getOwnOrder(req, res);
-  if (!order) return;
-  if (order.payment_status === 'paid') return res.redirect(`/orders?placed=${order.id}`);
-
-  markPaid(order.id, 'UPI QR');
-  res.redirect(`/orders?placed=${order.id}`);
 });
 
 router.post('/pay/:id/card', requireLogin, (req, res) => {
