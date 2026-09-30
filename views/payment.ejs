@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<a href="/cart" class="back-link">&larr; Back to cart</a>
+<h1>Payment</h1>
+
+<div class="pay-layout">
+
+  <!-- Order summary -->
+  <section class="pay-card pay-summary">
+    <h3>Order #<%= order.id %></h3>
+    <p class="hint">Amount to pay</p>
+    <p class="pay-amount">₹<%= order.total.toFixed(2) %></p>
+    <p class="demo-note">
+      <strong>Demo mode.</strong> This is a practice payment gateway &mdash; no real money is charged.
+    </p>
+  </section>
+
+  <!-- Payment methods -->
+  <section class="pay-card pay-methods">
+    <div class="pay-tabs" role="tablist">
+      <button type="button" class="pay-tab <%= tab === 'upi' ? 'active' : '' %>" data-tab="upi">Scan QR (UPI)</button>
+      <button type="button" class="pay-tab <%= tab === 'card' ? 'active' : '' %>" data-tab="card">Card</button>
+    </div>
+
+    <% if (error) { %><p class="error-msg"><%= error %></p><% } %>
+
+    <!-- UPI / QR -->
+    <div class="pay-panel <%= tab === 'upi' ? 'active' : '' %>" id="panel-upi">
+      <p class="hint">Scan this code with any camera or UPI app.</p>
+      <div class="qr-box"><%- qrSvg %></div>
+      <p class="qr-meta">Pay to <strong><%= merchantVpa %></strong></p>
+      <p class="qr-meta">₹<%= order.total.toFixed(2) %></p>
+      <form method="POST" action="/pay/<%= order.id %>/upi">
+        <button type="submit" class="checkout-btn">I've scanned &amp; paid</button>
+      </form>
+      <p class="hint small">Demo only: the merchant id is fake, so the button above simulates the bank confirming your payment.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="pay-panel <%= tab === 'card' ? 'active' : '' %>" id="panel-card">
+      <form method="POST" action="/pay/<%= order.id %>/card" class="auth-form" autocomplete="off">
+        <label for="card_name">Name on card</label>
+        <input id="card_name" name="card_name" type="text" value="<%= form.card_name || '' %>" required>
+
+        <label for="card_number">Card number</label>
+        <input id="card_number" name="card_number" type="text" inputmode="numeric"
+               placeholder="4242 4242 4242 4242" maxlength="23" value="<%= form.card_number || '' %>" required>
+
+        <div class="pay-row">
+          <div>
+            <label for="card_expiry">Expiry (MM/YY)</label>
+            <input id="card_expiry" name="card_expiry" type="text" placeholder="12/30" maxlength="5" value="<%= form.card_expiry || '' %>" required>
+          </div>
+          <div>
+            <label for="card_cvv">CVV</label>
+            <input id="card_cvv" name="card_cvv" type="password" inputmode="numeric" placeholder="123" maxlength="4" required>
+          </div>
+        </div>
+
+        <button type="submit">Pay ₹<%= order.total.toFixed(2) %></button>
+      </form>
+      <p class="hint small">Test card: 4242 4242 4242 4242, any future expiry, any CVV. Card details are never saved.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Tab switching + card-number spacing
+  document.querySelectorAll('.pay-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.pay-tab').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.pay-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+  var num = document.getElementById('card_number');
+  num.addEventListener('input', function () {
+    num.value = num.value.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
+  });
+  var exp = document.getElementById('card_expiry');
+  exp.addEventListener('input', function () {
+    var d = exp.value.replace(/\D/g, '').slice(0, 4);
+    exp.value = d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d;
+  });
+</script>
+
+<%- include('partials/footer') %>

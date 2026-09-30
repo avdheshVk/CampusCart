@@ -56,6 +56,19 @@ db.exec(`
   );
 `);
 
+// ---------- Payment columns (safe to run on an existing database) ----------
+// Adds payment info to the orders table only if it isn't there yet.
+const orderCols = db.prepare('PRAGMA table_info(orders)').all().map(c => c.name);
+const paymentCols = {
+  payment_status: 'TEXT',   // 'pending' | 'paid'
+  payment_method: 'TEXT',   // 'UPI QR' | 'Card'
+  payment_ref:    'TEXT',   // fake gateway transaction id
+  paid_at:        'TEXT'
+};
+for (const [col, type] of Object.entries(paymentCols)) {
+  if (!orderCols.includes(col)) db.exec(`ALTER TABLE orders ADD COLUMN ${col} ${type}`);
+}
+
 // Small helper: run a function inside a transaction (BEGIN/COMMIT/ROLLBACK).
 // node:sqlite doesn't ship a db.transaction() helper like better-sqlite3 did,
 // so we provide a tiny equivalent and reuse it everywhere.

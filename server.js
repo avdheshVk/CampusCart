@@ -38,6 +38,7 @@ app.use('/', require('./routes/index'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/cart'));
 app.use('/', require('./routes/orders'));
+app.use('/', require('./routes/payment'));
 app.use('/', require('./routes/admin'));
 
 app.listen(PORT, () => {

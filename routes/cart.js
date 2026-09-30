@@ -1,6 +1,7 @@
 // routes/cart.js
 // Cart is stored in the session as { productId: quantity }.
-// Checkout requires login and converts the cart into an order.
+// Checkout requires login and converts the cart into a pending order,
+// which is then paid for on /pay/:orderId (see routes/payment.js).
 
 const express = require('express');
 const router = express.Router();
@@ -67,7 +68,7 @@ router.post('/cart/checkout', requireLogin, (req, res) => {
   }
 
   const insertOrder = db.prepare(`
-    INSERT INTO orders (user_id, total, status) VALUES (?, ?, 'placed')
+    INSERT INTO orders (user_id, total, status, payment_status) VALUES (?, ?, 'pending_payment', 'pending')
   `);
   const insertItem = db.prepare(`
     INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
@@ -87,7 +88,8 @@ router.post('/cart/checkout', requireLogin, (req, res) => {
 
   req.session.cart = {};
 
-  res.redirect(`/orders?placed=${orderId}`);
+  // Order is saved but unpaid — send the customer to the payment gateway.
+  res.redirect(`/pay/${orderId}`);
 });
 
 module.exports = router;

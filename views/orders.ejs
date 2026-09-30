@@ -2,8 +2,9 @@
 
 <h1>My Orders</h1>
 
-<% if (placedId) { %>
-  <p class="success-msg">Order #<%= placedId %> placed successfully!</p>
+<% const placedOrder = placedId ? orders.find(o => String(o.id) === String(placedId)) : null; %>
+<% if (placedOrder && placedOrder.payment_status === 'paid') { %>
+  <p class="success-msg">Payment received &mdash; Order #<%= placedOrder.id %> placed successfully!</p>
 <% } %>
 
 <% if (orders.length === 0) { %>
@@ -13,7 +14,7 @@
     <div class="order-card">
       <div class="order-header">
         <h3>Order #<%= order.id %></h3>
-        <span class="order-status"><%= order.status %></span>
+        <span class="order-status <%= order.payment_status === 'pending' ? 'pending' : '' %>"><%= order.status === 'pending_payment' ? 'awaiting payment' : order.status %></span>
       </div>
       <p class="order-date"><%= order.created_at %></p>
       <ul class="order-items">
@@ -22,6 +23,11 @@
         <% }) %>
       </ul>
       <p class="order-total">Total: ₹<%= order.total.toFixed(2) %></p>
+      <% if (order.payment_status === 'paid') { %>
+        <p class="order-payment">Paid via <%= order.payment_method %> &middot; Ref <%= order.payment_ref %></p>
+      <% } else if (order.payment_status === 'pending') { %>
+        <p class="order-payment"><a href="/pay/<%= order.id %>" class="pay-now-link">Pay now &rarr;</a></p>
+      <% } %>
     </div>
   <% }) %>
 <% } %>
