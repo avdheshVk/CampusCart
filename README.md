@@ -1,3 +1,4 @@
+
 # Campus Cart — Simple E-Commerce Web App
 
 A full-stack e-commerce website built for a college (CA/BCA) project.
@@ -70,3 +71,6 @@ campus-cart/
 - Add order status updates (processing → shipped → delivered) from the admin panel
 - Deploy it (Render, Railway, or a college server) so it's live for your demo
 - Swap the in-memory session store for `connect-sqlite3` for production use
+=======
+# CampusCart
+

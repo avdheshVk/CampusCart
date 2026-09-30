@@ -1,0 +1,4 @@
+db/app.db-shm
+db/app.db-wal
+db
+node_modules
