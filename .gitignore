@@ -1,4 +1,5 @@
-db/app.db-shm
-db/app.db-wal
-db
-node_modules
+node_modules/
+db/*.db
+db/*.db-shm
+db/*.db-wal
+.env
