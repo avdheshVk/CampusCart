@@ -115,12 +115,12 @@ if (productCount === 0) {
 // ---------- Seed a default admin account ----------
 const adminExists = db.prepare('SELECT id FROM users WHERE email = ?').get('admin@campuscart.com');
 if (!adminExists) {
-  const hash = bcrypt.hashSync('admin123', 10);
+  const hash = bcrypt.hashSync('@dmin123', 10);
   db.prepare(`
     INSERT INTO users (name, email, password_hash, is_admin)
     VALUES (?, ?, ?, 1)
   `).run('Admin', 'admin@campuscart.com', hash);
-  console.log('Seeded default admin account: admin@campuscart.com / admin123');
+  console.log('Seeded default admin account: admin@campuscart.com / @dmin123');
 }
 
 module.exports = { db, runInTransaction };
